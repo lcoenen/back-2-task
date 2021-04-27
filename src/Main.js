@@ -2,26 +2,12 @@ import React, { useReducer, useEffect } from "react";
 import { sample } from "lodash";
 
 import { reducer, initialState } from "./reducer";
-import { NextLetter, Pause } from "./actions";
+import { NextKey, Pause, Press } from "./actions";
 
-const LETTERS = [
-  "A",
-  "B",
-  "C",
-  "D",
-  "E",
-  "F",
-  "G",
-  "H",
-  "I",
-  "J",
-  "K",
-  "L",
-  "M",
-  "N",
-  "O",
-];
-const INTERITEM_DELAY = 5000;
+import { Item, Result } from "./components";
+
+const KEYS = ["A", "B", "C", "D", "E", "F"];
+const INTERITEM_DELAY = 2500;
 const ITEM_PRESENTATION_DELAY = 1000;
 
 const log = (reducer) => (state, action) => {
@@ -34,16 +20,24 @@ const log = (reducer) => (state, action) => {
 
 export const Main = () => {
   const [state, dispatch] = useReducer(log(reducer), initialState);
-  const { letters, paused } = state;
-  const nextLetter = () => {
-    dispatch(NextLetter(sample(LETTERS)));
+  const { keys, paused, history, finished } = state;
+  const nextKey = () => {
+    dispatch(NextKey(sample(KEYS)));
     setTimeout(() => {
       dispatch(Pause());
     }, ITEM_PRESENTATION_DELAY);
   };
   useEffect(() => {
-    nextLetter();
-    setInterval(() => nextLetter(), INTERITEM_DELAY);
+    nextKey();
+    const id = setInterval(() => nextKey(), INTERITEM_DELAY);
+    return () => clearInterval(id);
   }, []);
-  return <p>{paused ? <></> : letters[letters.length - 1]} </p>;
+  document.addEventListener("keyup", (e) => {
+    dispatch(Press(new Date()));
+  });
+  return finished ? (
+    <Result history={history} />
+  ) : (
+    <Item keys={keys} paused={paused} />
+  );
 };
