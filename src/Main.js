@@ -8,7 +8,6 @@ import { Item, Result, Instructions } from "./components";
 
 import { KEYS, ITEM_PRESENTATION_DELAY, INTERITEM_DELAY } from "./constants";
 
-// TODO remove
 const log = (reducer) => (state, action) => {
   console.log("state", state);
   console.log("action", action);
@@ -43,6 +42,7 @@ export const Main = () => {
   document.addEventListener("keyup", (e) => {
     dispatch(Press(new Date()));
   });
+
   return !started ? (
     <Instructions onStart={onStart} />
   ) : finished ? (

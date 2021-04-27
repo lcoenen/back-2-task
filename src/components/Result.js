@@ -20,9 +20,11 @@ export const Result = ({ history }) => {
   }).length;
   return (
     <div>
+      <p>Total: {history.length}</p>
       <p>Correct: {correct} </p>
       <p>Missed: {missed}</p>
       <p>False positive: {falsePositives} </p>
+      <textarea>{JSON.stringify(history)}</textarea>
     </div>
   );
 };

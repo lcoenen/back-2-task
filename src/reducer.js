@@ -50,8 +50,10 @@ export const reducer = (state, action) => {
     }
     case "Press": {
       const { history, finished } = state;
-      const previous = history.splice(history.length - 1);
-      const last = history[history.length - 1];
+      const previous = history.splice(0, history.length - 1);
+      const last = history.length
+        ? history[history.length - 1]
+        : { strokes: [] };
       return finished
         ? state
         : {
