@@ -2,14 +2,13 @@ import React, { useReducer, useEffect } from "react";
 import { sample } from "lodash";
 
 import { reducer, initialState } from "./reducer";
-import { NextKey, Pause, Press } from "./actions";
+import { NextKey, Pause, Press, Start } from "./actions";
 
-import { Item, Result } from "./components";
+import { Item, Result, Instructions } from "./components";
 
-const KEYS = ["A", "B", "C", "D", "E", "F"];
-const INTERITEM_DELAY = 2500;
-const ITEM_PRESENTATION_DELAY = 1000;
+import { KEYS, ITEM_PRESENTATION_DELAY, INTERITEM_DELAY } from "./constants";
 
+// TODO remove
 const log = (reducer) => (state, action) => {
   console.log("state", state);
   console.log("action", action);
@@ -20,22 +19,33 @@ const log = (reducer) => (state, action) => {
 
 export const Main = () => {
   const [state, dispatch] = useReducer(log(reducer), initialState);
-  const { keys, paused, history, finished } = state;
+  const { keys, paused, history, started, finished } = state;
+
   const nextKey = () => {
     dispatch(NextKey(sample(KEYS)));
     setTimeout(() => {
       dispatch(Pause());
     }, ITEM_PRESENTATION_DELAY);
   };
+
   useEffect(() => {
-    nextKey();
-    const id = setInterval(() => nextKey(), INTERITEM_DELAY);
-    return () => clearInterval(id);
-  }, []);
+    if (started) {
+      nextKey();
+      const id = setInterval(() => nextKey(), INTERITEM_DELAY);
+      return () => clearInterval(id);
+    }
+  }, [started]);
+
+  const onStart = () => {
+    dispatch(Start());
+  };
+
   document.addEventListener("keyup", (e) => {
     dispatch(Press(new Date()));
   });
-  return finished ? (
+  return !started ? (
+    <Instructions onStart={onStart} />
+  ) : finished ? (
     <Result history={history} />
   ) : (
     <Item keys={keys} paused={paused} />

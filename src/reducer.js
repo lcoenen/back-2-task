@@ -1,21 +1,30 @@
+import { ITEM_LIMIT, MISSED_LIMIT, BACK_N } from "./constants";
+
 export const initialState = {
   keys: [],
   paused: false,
   history: [],
   finished: false,
+  started: false,
 };
 
 export const reducer = (state, action) => {
   switch (action.type) {
+    case "Start": {
+      return {
+        ...state,
+        started: true,
+      };
+    }
     case "NextKey": {
       const { history } = state;
       const keys = [...state.keys, action.key];
       const missed = history.filter(({ key, strokes }, i) => {
-        const target = i > 2 && history[i - 2];
+        const target = i > BACK_N && history[i - BACK_N];
         const positive = target && target.key === key;
         return positive && strokes.length === 0;
       }).length;
-      const finished = keys.length >= 15 || missed > 1;
+      const finished = keys.length >= ITEM_LIMIT || missed > MISSED_LIMIT;
       return state.finished
         ? state
         : {
