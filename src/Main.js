@@ -1,23 +1,29 @@
 import React, { useReducer, useEffect } from "react";
 import { sample } from "lodash";
+import saveAs from "save-as";
 
 import { reducer, initialState } from "./reducer";
-import { NextKey, Pause, Press, Start } from "./actions";
+import { NextKey, Pause, Press, Start, Reset } from "./actions";
 
 import { Item, Result, Instructions } from "./components";
 
 import { KEYS, ITEM_PRESENTATION_DELAY, INTERITEM_DELAY } from "./constants";
 
-const log = (reducer) => (state, action) => {
-  console.log("state", state);
-  console.log("action", action);
-  const result = reducer(state, action);
-  console.log("result", result);
-  return result;
-};
+import styled from "styled-components";
+
+export const MainBox = styled.div`
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  margin: 0;
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
 
 export const Main = () => {
-  const [state, dispatch] = useReducer(log(reducer), initialState);
+  const [state, dispatch] = useReducer(reducer, initialState);
   const { keys, paused, history, started, finished } = state;
 
   const nextKey = () => {
@@ -43,11 +49,22 @@ export const Main = () => {
     dispatch(Press(new Date()));
   });
 
-  return !started ? (
-    <Instructions onStart={onStart} />
-  ) : finished ? (
-    <Result history={history} />
-  ) : (
-    <Item keys={keys} paused={paused} />
+  const saveHistory = () =>
+    saveAs(
+      new Blob([JSON.stringify(history)], { type: "text/plain;charset=utf-8" }),
+      "result.json"
+    );
+  const reset = () => dispatch(Reset());
+
+  return (
+    <MainBox>
+      {!started ? (
+        <Instructions onStart={onStart} />
+      ) : finished ? (
+        <Result history={history} onDownload={saveHistory} onReset={reset} />
+      ) : (
+        <Item keys={keys} paused={paused} />
+      )}{" "}
+    </MainBox>
   );
 };

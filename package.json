@@ -13,7 +13,9 @@
     "parcel": "^2.0.0-beta.2",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
-    "styled": "^1.0.0"
+    "save-as": "^0.1.8",
+    "styled": "^1.0.0",
+    "styled-components": "^5.2.3"
   },
   "scripts": {
     "start": "parcel index.html",

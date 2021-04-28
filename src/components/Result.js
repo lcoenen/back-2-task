@@ -1,6 +1,14 @@
 import React from "react";
+import styled from "styled-components";
 
-export const Result = ({ history }) => {
+const Button = styled.button`
+  border: 1px solid white;
+  border-radius: 1em;
+  width: 100%;
+  padding: 1em;
+`;
+
+export const Result = ({ history, onReset, onDownload }) => {
   const correct = history.filter(({ key, strokes }, i) => {
     const target = i > 2 && history[i - 2];
     const positive = target && target.key === key;
@@ -24,7 +32,8 @@ export const Result = ({ history }) => {
       <p>Correct: {correct} </p>
       <p>Missed: {missed}</p>
       <p>False positive: {falsePositives} </p>
-      <textarea>{JSON.stringify(history)}</textarea>
+      <button onClick={onDownload}>Download results</button>
+      <button onClick={onReset}>Start over</button>
     </div>
   );
 };
